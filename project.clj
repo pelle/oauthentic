@@ -1,4 +1,4 @@
-(defproject oauthentic "0.0.1-SNAPSHOT"
+(defproject oauthentic "0.0.1"
   :description "Simple OAuth2 client library"
   :dependencies  [[org.clojure/clojure "1.4.0"]
                   [clj-http "0.4.1"]]

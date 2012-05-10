@@ -35,15 +35,18 @@ To obtain authorization you need the following:
 - the services authorization url (get this from the provider)
 - redirect-uri A URL for an endpoint on your site that handles the 2nd phase above
 
-    # PicoMoney
+### PicoMoney
+
     => (build-authorization-url "https://picomoney.com/oauth/authorize" { :client-id "INSERT YOUR OWN ID" :redirect-uri "http://yoursite.com/oauth/endpoint"})
     "https://picomoney.com/oauth/authorize?redirect_uri=http%253A%252F%252Fyoursite.com%252Foauth%252Fendpoint&response_type=code&client_id=INSERT+YOUR+OWN+ID"
 
-    # FaceBook
+### FaceBook
+
     => (build-authorization-url "https://www.facebook.com/dialog/oauth" { :client-id "INSERT YOUR OWN ID" :redirect-uri "http://yoursite.com/oauth/endpoint" })
     "https://www.facebook.com/dialog/oauth?redirect_uri=http%253A%252F%252Fyoursite.com%252Foauth%252Fendpoint&response_type=code&client_id=INSERT+YOUR+OWN+ID"
 
-    # GitHub
+### GitHub
+
     => (build-authorization-url "https://github.com/login/oauth/authorize" { :client-id "INSERT YOUR OWN ID" :redirect-uri "http://yoursite.com/oauth/endpoint" })
     "https://github.com/login/oauth/authorize?redirect_uri=http%253A%252F%252Fyoursite.com%252Foauth%252Fendpoint&response_type=code&client_id=INSERT+YOUR+OWN+ID"
 
@@ -61,9 +64,20 @@ To obtain a token you need the code you need the following parameters:
 - client_secret (get this from the provider)
 - token url (get this from the provider)
 
-    # PicoMoney
-    => (fetch-token "https://picomoney.com/oauth/token" { :client-id "INSERT YOUR OWN ID" :client-secret "INSERT YOUR OWN SECRET" :code code})
+In theory the following examples should work:
+
+    ; PicoMoney
+    => (fetch-token "https://picomoney.com/oauth/token" { :client-id "INSERT YOUR OWN ID" :client-secret "INSERT YOUR OWN SECRET" :code code :redirect-uri "INSERT YOUR ENDPOINT HERE"})
     {:access-token "TOKEN FROM SERVICE" :token-type "bearer"}
+
+    ; Facebook
+    => (fetch-token "https://graph.facebook.com/oauth/access_token" { :client-id "INSERT YOUR OWN ID" :client-secret "INSERT YOUR OWN SECRET" :code code :redirect-uri "INSERT YOUR ENDPOINT HERE"})
+    {:access-token "TOKEN FROM SERVICE" :token-type "bearer"}
+
+    ; GitHub
+    => (fetch-token "https://github.com/login/oauth/access_token" { :client-id "INSERT YOUR OWN ID" :client-secret "INSERT YOUR OWN SECRET" :code code :redirect-uri "INSERT YOUR ENDPOINT HERE"})
+    {:access-token "TOKEN FROM SERVICE" :token-type "bearer"}
+
   
 ### Obtain Token with Client Credentials
 
@@ -75,8 +89,16 @@ You need the following parameters:
 - client_secret (get this from the provider)
 - token url (get this from the provider)
 
-    # PicoMoney
+    ; PicoMoney
     => (fetch-token "https://picomoney.com/oauth/token" { :client-id "INSERT YOUR OWN ID" :client-secret "INSERT YOUR OWN SECRET" })
+    {:access-token "TOKEN FROM SERVICE" :token-type "bearer"}
+
+    ; Facebook
+    => (fetch-token "https://graph.facebook.com/oauth/access_token" { :client-id "INSERT YOUR OWN ID" :client-secret "INSERT YOUR OWN SECRET" })
+    {:access-token "TOKEN FROM SERVICE" :token-type "bearer"}
+
+    ; GitHub
+    => (fetch-token "https://github.com/login/oauth/access_token" { :client-id "INSERT YOUR OWN ID" :client-secret "INSERT YOUR OWN SECRET" })
     {:access-token "TOKEN FROM SERVICE" :token-type "bearer"}
 
 
