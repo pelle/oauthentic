@@ -40,6 +40,7 @@
     {:status 200 :headers {} :body "{\"tx_id\":\"ABCDEF\"}"}
     ))
 
+
 (deftest fetch-oauth-tokens-for-auth-code
   (t/reset-token-store!)
   (cl/reset-client-store!)
@@ -55,6 +56,25 @@
                                                       :client-secret (:client-secret client)
                                                       :code code 
                                                       :redirect-uri "http://test.com/endpoint"})
+              (catch Exception e (prn e)))
+          {:access-token ( :token (first (t/tokens))) :token-type :bearer}
+      )
+      ))))
+
+
+; http://tools.ietf.org/html/draft-ietf-oauth-v2-26#section-4.4
+(deftest fetch-oauth-tokens-for-client-owner
+  (t/reset-token-store!)
+  (cl/reset-client-store!)
+  (cd/reset-auth-code-store!)
+
+  (let [ handler (wrap-ring-handler-for-testing (e/token-handler))
+         client (cl/register-client)]
+
+    (with-fake-routes
+      {"https://test.com/token" handler }
+      (is (= (try (fetch-token "https://test.com/token" {  :client-id (:client-id client)
+                                                      :client-secret (:client-secret client)})
               (catch Exception e (prn e)))
           {:access-token ( :token (first (t/tokens))) :token-type :bearer}
       )

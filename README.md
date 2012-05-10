@@ -6,6 +6,8 @@ This library only handles the authorization aspects of OAuth 2.
 
 We recommend using [clj-http](https://github.com/dakrone/clj-http) for performing actual authenticated requests once you have a token.
 
+[![Build Status](https://secure.travis-ci.org/pelle/oauthentic.png)](http://travis-ci.org/pelle/oauthentic)
+
 ## Usage
 
 Add the following to your project.clj's dependencies section:
@@ -63,6 +65,19 @@ To obtain a token you need the code you need the following parameters:
     => (fetch-token "https://picomoney.com/oauth/token" { :client-id "INSERT YOUR OWN ID" :client-secret "INSERT YOUR OWN SECRET" :code code})
     {:access-token "TOKEN FROM SERVICE" :token-type "bearer"}
   
+### Obtain Token with Client Credentials
+
+To obtain a token for your own application you can skip the authorization flow completely and use this [method](http://tools.ietf.org/html/draft-ietf-oauth-v2-26#section-4.4.
+
+You need the following parameters:
+
+- client_id (get this from the provider)
+- client_secret (get this from the provider)
+- token url (get this from the provider)
+
+    # PicoMoney
+    => (fetch-token "https://picomoney.com/oauth/token" { :client-id "INSERT YOUR OWN ID" :client-secret "INSERT YOUR OWN SECRET" })
+    {:access-token "TOKEN FROM SERVICE" :token-type "bearer"}
 
 
 ## License

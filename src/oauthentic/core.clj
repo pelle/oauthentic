@@ -41,9 +41,10 @@
               :basic-auth [(:client-id params) (:client-secret params)]
               :accept :json
               :as :json
-              :form-params {
-                :grant_type "authorization_code"
-                :code (:code params)
-                :redirect_uri (:redirect-uri params)
-                }}))]
+              :form-params 
+                (if (:code params)
+                  { :grant_type "authorization_code"
+                    :code (:code params)
+                    :redirect_uri (:redirect-uri params) }
+                  { :grant_type "client_credentials" })}))]
     { :access-token (:access_token response) :token-type (keyword (:token_type response))}))
