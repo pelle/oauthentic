@@ -33,3 +33,17 @@
     (let [ qp  (reduce #( assoc %1 (name (key %2)) (val %2)) {}  
               {"client_id" client-id "response_type" (name (or response-type "code")) "redirect_uri" redirect-uri })]
       (assoc-query-params authorization-url qp))))
+
+(defn fetch-token
+  "Fetch an oauth token from server"
+  [url params]
+  (let [response (:body (client/post url {
+              :basic-auth [(:client-id params) (:client-secret params)]
+              :accept :json
+              :as :json
+              :form-params {
+                :grant_type "authorization_code"
+                :code (:code params)
+                :redirect_uri (:redirect-uri params)
+                }}))]
+    { :access-token (:access_token response) :token-type (keyword (:token_type response))}))
