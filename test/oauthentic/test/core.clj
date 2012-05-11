@@ -19,14 +19,13 @@
   )
 
 (deftest building-authorization-url 
-  (is (= (build-authorization-url { :authorization-url "https://test.com/authorize?abc=1%20a&one=1" :client-id "abcdefg"} { :redirect-uri "http://test.com/link-back" })
-          "https://test.com/authorize?abc=1%20a&one=1&redirect_uri=http%253A%252F%252Ftest.com%252Flink-back&response_type=code&client_id=abcdefg"))
+  (is (= (build-authorization-url { :authorization-url "https://test.com/authorize?abc=1%20a&one=1" :client-id "abcdefg"} { :redirect-uri "http://test.com/link-back" :scope "calendar" })
+          "https://test.com/authorize?abc=1%20a&one=1&client_id=abcdefg&response_type=code&redirect_uri=http%253A%252F%252Ftest.com%252Flink-back&scope=calendar"))
   (is (= (build-authorization-url "https://test.com/authorize?abc=1%20a&one=1"  { :client-id "abcdefg" :redirect-uri "http://test.com/link-back" })
-          "https://test.com/authorize?abc=1%20a&one=1&redirect_uri=http%253A%252F%252Ftest.com%252Flink-back&response_type=code&client_id=abcdefg"))
+           "https://test.com/authorize?abc=1%20a&one=1&client_id=abcdefg&response_type=code&redirect_uri=http%253A%252F%252Ftest.com%252Flink-back"))
   (is (= (build-authorization-url "https://test.com/authorize?abc=1%20a&one=1"  
         { :client-id "abcdefg" :response-type :token :redirect-uri "http://yoursite.com/oauth/endpoint" })
-          "https://test.com/authorize?abc=1%20a&one=1&redirect_uri=http%253A%252F%252Fyoursite.com%252Foauth%252Fendpoint&response_type=token&client_id=abcdefg"))
-  )
+          "https://test.com/authorize?abc=1%20a&one=1&client_id=abcdefg&response_type=token&redirect_uri=http%253A%252F%252Fyoursite.com%252Foauth%252Fendpoint")))
 
 (defn wrap-ring-handler-for-testing
   [handler]

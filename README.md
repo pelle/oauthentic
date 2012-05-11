@@ -12,7 +12,7 @@ We recommend using [clj-http](https://github.com/dakrone/clj-http) for performin
 
 Add the following to your project.clj's dependencies section:
 
-    [oauthentic "0.0.2"]
+    [oauthentic "0.0.3"]
 
 Import the library:
 

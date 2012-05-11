@@ -22,8 +22,8 @@
       (.getFragment u)))))
 
 (defn create-authorization-url [authorization-url client-id response-type redirect-uri params ] 
-    (let [ qp  (reduce #( assoc %1 (name (key %2)) (val %2)) {}  
-              {"client_id" client-id "response_type" (name (or response-type "code")) "redirect_uri" redirect-uri })]
+    (let [ qp  ( merge params (reduce #( assoc %1 (name (key %2)) (val %2)) {}  
+                  {"client_id" client-id "response_type" (name (or response-type "code")) "redirect_uri" redirect-uri }))]
       (assoc-query-params authorization-url qp)))
 
 
