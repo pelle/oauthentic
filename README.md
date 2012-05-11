@@ -12,7 +12,7 @@ We recommend using [clj-http](https://github.com/dakrone/clj-http) for performin
 
 Add the following to your project.clj's dependencies section:
 
-    [oauthentic "0.0.1"]
+    [oauthentic "0.0.2"]
 
 Import the library:
 
@@ -50,6 +50,20 @@ To obtain authorization you need the following:
     => (build-authorization-url "https://github.com/login/oauth/authorize" { :client-id "INSERT YOUR OWN ID" :redirect-uri "http://yoursite.com/oauth/endpoint" })
     "https://github.com/login/oauth/authorize?redirect_uri=http%253A%252F%252Fyoursite.com%252Foauth%252Fendpoint&response_type=code&client_id=INSERT+YOUR+OWN+ID"
 
+You can also call it with the first parameter being a map containing information about the server. This map should contain the following keys:
+
+- :authorization-url
+- :client-id
+
+You still pass the request specific parameters such as redirect-uri and scope in the second map.
+
+    => (build-authorization-url { :authorization-url "https://picomoney.com/oauth/authorize" 
+                                  :client-id "INSERT YOUR OWN ID"}
+                                { :redirect-uri "http://yoursite.com/oauth/endpoint"})
+    "https://picomoney.com/oauth/authorize?redirect_uri=http%253A%252F%252Fyoursite.com%252Foauth%252Fendpoint&response_type=code&client_id=INSERT+YOUR+OWN+ID"
+
+
+
 You can either redirect the user to to the URL or use it as a link.
 
 The user will be redirected back to the URL you provided in redirect_uri with a code in the http query parameters or an error code. If you received the code proceed to...
@@ -78,7 +92,21 @@ In theory the following examples should work:
     => (fetch-token "https://github.com/login/oauth/access_token" { :client-id "INSERT YOUR OWN ID" :client-secret "INSERT YOUR OWN SECRET" :code code :redirect-uri "INSERT YOUR ENDPOINT HERE"})
     {:access-token "TOKEN FROM SERVICE" :token-type "bearer"}
 
-  
+You can also call it with the first parameter being a map containing information about the server. This map should contain the following keys:
+
+- :token-url
+- :client-id
+- :client-secret
+
+You still need to pass request specific details in the second map, such as :code and :redirect-uri.
+
+    => (fetch-token { :token-url "https://picomoney.com/oauth/token"
+                      :client-id "INSERT YOUR OWN ID" 
+                      :client-secret "INSERT YOUR OWN SECRET"}
+                    { :code code :redirect-uri "INSERT YOUR ENDPOINT HERE"})
+    {:access-token "TOKEN FROM SERVICE" :token-type "bearer"}
+
+
 ### Obtain Token with Client Credentials
 
 To obtain a token for your own application you can skip the authorization flow completely and use this [method](http://tools.ietf.org/html/draft-ietf-oauth-v2-26#section-4.4.
