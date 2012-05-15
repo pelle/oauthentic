@@ -1,5 +1,6 @@
 (ns oauthentic.core
-  (:require [clj-http.client :as client])
+  (:require [clj-http.client :as client]
+            [clj-http.util :as u])
   (:import (java.net URI)))
 
 (defn assoc-query-params
@@ -8,22 +9,28 @@
   "
   [url params]
   (let [u (URI. url) 
-        q (.getQuery u)
-        nq (client/generate-query-string params)]
+        q (.getRawQuery u)
+        nq (client/generate-query-string params)
+        fr (.getRawFragment u)]
     (str (URI.
       (.getScheme u)
       (.getUserInfo u)
       (.getHost u) 
       (.getPort u)
       (.getPath u)
+      nil nil ) ;; Have to add query and path manually as URI reencodes the query and fragment
+      "?"
       (if q
         (str q "&" nq)
-        nq )          
-      (.getFragment u)))))
+        nq )
+      (if fr 
+        (str "#" fr))
+      )))
 
 (defn create-authorization-url [authorization-url client-id response-type redirect-uri params ] 
     (let [ qp  ( merge params (reduce #( assoc %1 (name (key %2)) (val %2)) {}  
-                  {"client_id" client-id "response_type" (name (or response-type "code")) "redirect_uri" redirect-uri }))]
+                  {"client_id" client-id "response_type" (name (or response-type "code")) "redirect_uri" redirect-uri }))
+          ]
       (assoc-query-params authorization-url qp)))
 
 

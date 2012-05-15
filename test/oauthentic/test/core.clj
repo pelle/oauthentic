@@ -19,13 +19,16 @@
   )
 
 (deftest building-authorization-url 
-  (is (= (build-authorization-url { :authorization-url "https://test.com/authorize?abc=1%20a&one=1" :client-id "abcdefg"} { :redirect-uri "http://test.com/link-back" :scope "calendar" })
-          "https://test.com/authorize?abc=1%20a&one=1&client_id=abcdefg&response_type=code&redirect_uri=http%253A%252F%252Ftest.com%252Flink-back&scope=calendar"))
+  (is (= (build-authorization-url { :authorization-url "https://test.com/authorize?abc=1%20a&one=1" :client-id "abcdefg"} { :redirect-uri "http://test.com/link-back?product_id=123&description=Super%20Product" :scope "calendar" })
+          "https://test.com/authorize?abc=1%20a&one=1&client_id=abcdefg&response_type=code&redirect_uri=http%3A%2F%2Ftest.com%2Flink-back%3Fproduct_id%3D123%26description%3DSuper%2520Product&scope=calendar"))
   (is (= (build-authorization-url "https://test.com/authorize?abc=1%20a&one=1"  { :client-id "abcdefg" :redirect-uri "http://test.com/link-back" })
-           "https://test.com/authorize?abc=1%20a&one=1&client_id=abcdefg&response_type=code&redirect_uri=http%253A%252F%252Ftest.com%252Flink-back"))
+           "https://test.com/authorize?abc=1%20a&one=1&client_id=abcdefg&response_type=code&redirect_uri=http%3A%2F%2Ftest.com%2Flink-back"))
   (is (= (build-authorization-url "https://test.com/authorize?abc=1%20a&one=1"  
         { :client-id "abcdefg" :response-type :token :redirect-uri "http://yoursite.com/oauth/endpoint" })
-          "https://test.com/authorize?abc=1%20a&one=1&client_id=abcdefg&response_type=token&redirect_uri=http%253A%252F%252Fyoursite.com%252Foauth%252Fendpoint")))
+          "https://test.com/authorize?abc=1%20a&one=1&client_id=abcdefg&response_type=token&redirect_uri=http%3A%2F%2Fyoursite.com%2Foauth%2Fendpoint"))
+  (is (= (build-authorization-url "https://test.com/authorize?abc=1%20a&one=1"  
+        { :client-id "abcdefg" :response-type :token :redirect-uri "http://yoursite.com/oauth/endpoint" :extra "pelle@picomoney.com"})
+          "https://test.com/authorize?abc=1%20a&one=1&client_id=abcdefg&response_type=token&redirect_uri=http%3A%2F%2Fyoursite.com%2Foauth%2Fendpoint&extra=pelle%40picomoney.com")))
 
 (defn wrap-ring-handler-for-testing
   [handler]
