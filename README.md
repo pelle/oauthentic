@@ -129,6 +129,26 @@ You need the following parameters:
     => (fetch-token "https://github.com/login/oauth/access_token" { :client-id "INSERT YOUR OWN ID" :client-secret "INSERT YOUR OWN SECRET" })
     {:access-token "TOKEN FROM SERVICE" :token-type "bearer"}
 
+### Ring Handler
+
+There is a Ring Handler for automatically handling the above flow in a similar manner to Ruby's OmniAuth.
+
+It lives in oauthentic.ring and can be installed like this:
+
+    (def fb-login-handler (oauthentic.ring/oauthentic-handler login-handler error-handler { :authorization-url "https://github.com/login/oauth/authorize" 
+                                                :token-url "https://github.com/login/oauth/access_token"
+                                                :client-id "INSERT YOUR OWN ID" 
+                                                :client-secret "INSERT YOUR OWN SECRET" })
+
+Install the handler in your routes however you like.
+
+Login function is a ring handler function that is passed the request with the token as :oauthentic-token in the request.
+
+It should knows how to correctly set the session verify user based on the user database etc. As it's a ring handler it should return a correct response.
+
+Error handler is another ring handler that is called if an error is returned from the service.
+
+Default dumb implementations are available and can be used by leaving them out.
 
 ## License
 
