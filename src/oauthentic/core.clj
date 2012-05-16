@@ -11,18 +11,18 @@
         q (.getQuery u)
         nq (client/generate-query-string params)]
     (str (URI.
-      (.getScheme u)
-      (.getUserInfo u)
-      (.getHost u) 
-      (.getPort u)
-      (.getPath u)
-      (if q
-        (str q "&" nq)
-        nq )          
-      (.getFragment u)))))
+          (format "%s://%s%s%s%s%s%s"
+                  (.getScheme u)
+                  (or (.getUserInfo u) "")
+                  (.getHost u)
+                  (let [port (.getPort u)] (if (pos? port) port ""))
+                  (or (.getPath u) "/")
+                  (let [query (if q (str q "&" nq) nq)]
+                    (if (seq query) (str "?" query) ""))
+                  (or (.getFragment u) ""))))))
 
-(defn create-authorization-url [authorization-url client-id response-type redirect-uri params ] 
-    (let [ qp  ( merge params (reduce #( assoc %1 (name (key %2)) (val %2)) {}  
+(defn create-authorization-url [authorization-url client-id response-type redirect-uri params ]
+    (let [ qp  ( merge params (reduce #( assoc %1 (name (key %2)) (val %2)) {}
                   {"client_id" client-id "response_type" (name (or response-type "code")) "redirect_uri" redirect-uri }))]
       (assoc-query-params authorization-url qp)))
 
