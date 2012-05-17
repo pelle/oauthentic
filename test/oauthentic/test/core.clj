@@ -50,19 +50,19 @@
   (cd/reset-auth-code-store!)
 
   (let [ handler (wrap-ring-handler-for-testing (e/token-handler))
-         client (cl/register-client)]
+         client (cl/register-client) ]
 
     (with-fake-routes
       {"https://test.com/token" handler }
-      (let [ code (:code (cd/create-auth-code client "user"))]
-        (is (= (try (fetch-token "https://test.com/token" {  :client-id (:client-id client)
-                                                        :client-secret (:client-secret client)
-                                                        :code code 
-                                                        :redirect-uri "http://test.com/endpoint"})
+      (let [ code (:code (cd/create-auth-code client "user" "http://test.com/endpoint"))]
+        (is (= (try (fetch-token "https://test.com/token" { :client-id (:client-id client)
+                                                            :client-secret (:client-secret client)
+                                                            :code code 
+                                                            :redirect-uri "http://test.com/endpoint" })
                 (catch Exception e (prn e)))
             {:access-token ( :token (first (t/tokens))) :token-type :bearer})))
 
-      (let [ code (:code (cd/create-auth-code client "user"))]
+      (let [ code (:code (cd/create-auth-code client "user" "http://test.com/endpoint"))]
         (is (= (try (fetch-token  { :token-url "https://test.com/token"
                                   :client-id (:client-id client)
                                   :client-secret (:client-secret client) }

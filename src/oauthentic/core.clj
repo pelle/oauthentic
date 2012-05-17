@@ -55,15 +55,18 @@
 (defmethod fetch-token :default
   [url params]
   (let [response (:body (client/post url {
-              :basic-auth [(:client-id params) (:client-secret params)]
               :accept :json
               :as :json
               :form-params 
                 (if (:code params)
                   { :grant_type "authorization_code"
                     :code (:code params)
-                    :redirect_uri (:redirect-uri params) }
-                  { :grant_type "client_credentials" })}))]
+                    :redirect_uri (:redirect-uri params)
+                    :client_id (:client-id params) 
+                    :client_secret (:client-secret params) }
+                  { :grant_type "client_credentials" 
+                    :client_id (:client-id params) 
+                    :client_secret (:client-secret params) })}))]
     { :access-token (:access_token response) :token-type (keyword (:token_type response))}))
 
 
