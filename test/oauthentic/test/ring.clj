@@ -14,7 +14,7 @@
 
   (deftest should-redirect-to-service
     (let [response (handler { :params {}
-                              :scheme "https"
+                              :scheme :https
                               :server-name "testapp.com"
                               :server-port 80
                               :uri "/connect"})]
@@ -31,7 +31,7 @@
 
       (is (= {:access-token "TOKENEFG" :token-type :bearer } 
                   (handler {  :params { :code "CODEBCD" }
-                              :scheme "https"
+                              :scheme :https
                               :server-name "testapp.com"
                               :server-port 80
                               :uri "/connect"})))
@@ -41,7 +41,7 @@
   (deftest should-handle-auth-errors
 
     (is (= "invalid_client" (handler  { :params { :error "invalid_client" }                      
-                                        :scheme "https"
+                                        :scheme :https
                                         :server-name "testapp.com"
                                         :server-port 80
                                         :uri "/connect"})))))

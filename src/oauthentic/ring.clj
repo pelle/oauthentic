@@ -38,15 +38,14 @@
 
   ([login-handler error-handler service-params]
     (fn [req]
-      (let [ redirect-uri (str (URI.  (req :scheme)
+      (let [ redirect-uri (str (URI.  (name (req :scheme))
                                       nil
                                       (req :server-name)
                                       (req :server-port) ;; Need to handle case with default ports to remove unsightly :443s and :80s
                                       (req :uri)
                                       (req :query-string)
                                       nil))
-             params (req :params)
-             _ (prn redirect-uri)]
+             params (req :params)]
         (cond
           (params :code)
             (let [ token (fetch-token service-params {:code (params :code) :redirect-uri redirect-uri })]
