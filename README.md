@@ -2,7 +2,7 @@
 
 Lightweight [OAuth 2](http://tools.ietf.org/html/draft-ietf-oauth-v2-26) client library for Clojure.
 
-This library only handles the authorization aspects of OAuth 2. 
+This library only handles the authorization aspects of OAuth 2.
 
 We recommend using [clj-http](https://github.com/dakrone/clj-http) for performing actual authenticated requests once you have a token.
 
@@ -12,7 +12,7 @@ We recommend using [clj-http](https://github.com/dakrone/clj-http) for performin
 
 Add the following to your project.clj's dependencies section:
 
-    [oauthentic "0.0.6"]
+    [oauthentic "0.0.7"]
 
 Import the library:
 
@@ -57,7 +57,7 @@ You can also call it with the first parameter being a map containing information
 
 You still pass the request specific parameters such as redirect-uri and scope in the second map.
 
-    => (build-authorization-url { :authorization-url "https://picomoney.com/oauth/authorize" 
+    => (build-authorization-url { :authorization-url "https://picomoney.com/oauth/authorize"
                                   :client-id "INSERT YOUR OWN ID"}
                                 { :redirect-uri "http://yoursite.com/oauth/endpoint"})
     "https://picomoney.com/oauth/authorize?redirect_uri=http%253A%252F%252Fyoursite.com%252Foauth%252Fendpoint&response_type=code&client_id=INSERT+YOUR+OWN+ID"
@@ -101,7 +101,7 @@ You can also call it with the first parameter being a map containing information
 You still need to pass request specific details in the second map, such as :code and :redirect-uri.
 
     => (fetch-token { :token-url "https://picomoney.com/oauth/token"
-                      :client-id "INSERT YOUR OWN ID" 
+                      :client-id "INSERT YOUR OWN ID"
                       :client-secret "INSERT YOUR OWN SECRET"}
                     { :code code :redirect-uri "INSERT YOUR ENDPOINT HERE"})
     {:access-token "TOKEN FROM SERVICE" :token-type "bearer"}
@@ -135,9 +135,9 @@ There is a Ring Handler for automatically handling the above flow in a similar m
 
 It lives in oauthentic.ring and can be installed like this:
 
-    (def fb-login-handler (oauthentic.ring/oauthentic-handler login-handler error-handler { :authorization-url "https://github.com/login/oauth/authorize" 
+    (def fb-login-handler (oauthentic.ring/oauthentic-handler login-handler error-handler { :authorization-url "https://github.com/login/oauth/authorize"
                                                 :token-url "https://github.com/login/oauth/access_token"
-                                                :client-id "INSERT YOUR OWN ID" 
+                                                :client-id "INSERT YOUR OWN ID"
                                                 :client-secret "INSERT YOUR OWN SECRET" })
 
 Install the handler in your routes however you like.
