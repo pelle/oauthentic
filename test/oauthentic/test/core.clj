@@ -61,7 +61,6 @@
         (is (= (try (fetch-token "https://test.com/token" { :client-id (:client-id client)
                                                             :client-secret (:client-secret client)
                                                             :code code
-                                                            :state "ABCDEF"
                                                             :redirect-uri "http://test.com/endpoint" })
                 (catch Exception e (prn e)))
             {:access-token ( :token (first (t/tokens))) :token-type :bearer})))

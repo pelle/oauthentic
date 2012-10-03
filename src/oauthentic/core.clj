@@ -63,7 +63,6 @@
                     :code (:code params)
                     :redirect_uri (:redirect-uri params)
                     :client_id (:client-id params)
-                    :state (:state params)
                     :client_secret (:client-secret params) }
                   { :grant_type "client_credentials"
                     :client_id (:client-id params)
