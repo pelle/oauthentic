@@ -22,7 +22,7 @@ Import the library:
 
 OAuth 2 will in most cases require you to send your user to an authorization url.
 
-In almost all cases you will want to use the [Authorization Code Flow](http://tools.ietf.org/html/draft-ietf-oauth-v2-26#section-4.1) to obtain authorization and a token.
+In almost all cases you will want to use the [Authorization Code Flow](http://tools.ietf.org/html/draft-ietf-oauth-v2-31#section-4.1) to obtain authorization and a token.
 
 This uses a 2 step approach:
 
@@ -113,9 +113,9 @@ To obtain a token for your own application you can skip the authorization flow c
 
 You need the following parameters:
 
-- client_id (get this from the provider)
-- client_secret (get this from the provider)
-- token url (get this from the provider)
+- :client-id (get this from the provider)
+- :client-secret (get this from the provider)
+- :token url (get this from the provider)
 
     ; PicoMoney
     => (fetch-token "https://picomoney.com/oauth/token" { :client-id "INSERT YOUR OWN ID" :client-secret "INSERT YOUR OWN SECRET" })

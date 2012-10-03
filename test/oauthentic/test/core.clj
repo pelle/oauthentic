@@ -33,6 +33,17 @@
         { :state "ABCD EF" :client-id "abcdefg" :response-type :token :redirect-uri "http://yoursite.com/oauth/endpoint" :extra "pelle@picomoney.com"})
           "https://test.com/authorize?abc=1%20a&one=1&client_id=abcdefg&response_type=token&redirect_uri=http%3A%2F%2Fyoursite.com%2Foauth%2Fendpoint&state=ABCD+EF&extra=pelle%40picomoney.com")))
 
+
+(deftest token-requests
+  (is (=
+    {:accept :json, :as :json, :form-params { :grant_type "client_credentials", :scope "basic"}, :basic-auth ["CLIENT-ID" "SECRET"]}
+    (token-request { :client-id "CLIENT-ID" :client-secret "SECRET" :scope "basic" })))
+  (is (=
+    {:accept :json, :as :json, :form-params { :grant_type "authorization_code", :scope "basic" :redirect_uri "http://test.com/callback" :code "CODE"}, :basic-auth ["CLIENT-ID" "SECRET"] }
+    (token-request { :code "CODE" :client-id "CLIENT-ID" :client-secret "SECRET" :scope "basic" :redirect-uri "http://test.com/callback"})))
+  )
+
+
 (defn wrap-ring-handler-for-testing
   [handler]
   (let [wrapped (wrap-params (wrap-keyword-params handler))]
@@ -75,8 +86,7 @@
           {:access-token ( :token (first (t/tokens))) :token-type :bearer})))
       )))
 
-
-; http://tools.ietf.org/html/draft-ietf-oauth-v2-26#section-4.4
+; http://tools.ietf.org/html/draft-ietf-oauth-v2-31#section-4.4
 (deftest fetch-oauth-tokens-for-client-owner
   (t/reset-token-store!)
   (cl/reset-client-store!)
