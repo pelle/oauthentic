@@ -5,5 +5,5 @@
                   [ring/ring-core "1.1.0"]]
   :profiles {
     :dev {
-      :dependencies [[clj-http-fake "0.3.0"]
-                     [clauth "1.0.0-rc4"]]}})
+      :dependencies [[clj-http-fake "0.4.1"]
+                     [clauth "1.0.0-rc10"]]}})
