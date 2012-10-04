@@ -21,7 +21,7 @@
     (oauth/token-request { :service :stripe :refresh-token "REFRESH" :client-id "CLIENT-ID" :client-secret "SECRET" :scope "basic"}))))
 
 (defn stripe-request [{ :keys [headers] :as req }]
-  (if (= "Bearer SECRET" (headers "Authorization"))
+  (if (= "Bearer SECRET" (headers "authorization"))
     {:status 200 :headers {} :body (json/generate-string {  :scope  "read_write" ;(:scope params)
                                                             :livemode true
                                                             :access_token "TOKEN"

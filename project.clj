@@ -1,7 +1,7 @@
 (defproject oauthentic "1.0.0-SNAPSHOT"
   :description "Simple OAuth2 client library"
   :dependencies  [[org.clojure/clojure "1.4.0"]
-                  [clj-http "0.4.1"]
+                  [clj-http "0.5.5"]
                   [ring/ring-core "1.1.0"]]
   :profiles {
     :dev {

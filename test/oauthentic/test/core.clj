@@ -58,9 +58,7 @@
   [handler]
   (let [wrapped (wrap-params (wrap-keyword-params handler))]
     (fn [req] (wrapped (assoc req
-                            :body (.getContent (:body req))
-                            :headers (assoc (:headers req) "authorization" ((:headers req) "Authorization")))))
-    ))
+                            :body (.getContent (:body req)))))))
 
 (defn dumprequest [req]
   (do
