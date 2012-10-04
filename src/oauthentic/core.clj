@@ -68,25 +68,28 @@
 (defmethod token-request :authorization-code
   [params]
   { :accept :json :as :json
-    :form-params (assoc (select-keys (assoc params :redirect_uri (:redirect-uri params))
-                             [:code :scope :redirect_uri])
-                        :grant_type "authorization_code")
+    :form-params (-> params
+                    (assoc :redirect_uri (:redirect-uri params))
+                    (select-keys [:code :scope :redirect_uri])
+                    (assoc :grant_type "authorization_code"))
     :basic-auth [(:client-id params) (:client-secret params)]})
 
 ;; http://tools.ietf.org/html/draft-ietf-oauth-v2-31#section-4.4
 (defmethod token-request :client-credentials
   [params]
   { :accept :json :as :json
-    :form-params (assoc (select-keys params [:scope])
-                    :grant_type "client_credentials" )
+    :form-params (-> params
+                    (select-keys [:scope])
+                    (assoc :grant_type "client_credentials"))
     :basic-auth [(:client-id params) (:client-secret params)]})
 
 ;; http://tools.ietf.org/html/draft-ietf-oauth-v2-31#section-4.3
-(defmethod token-request :username
+(defmethod token-request :password
   [params]
   { :accept :json :as :json
-    :form-params (assoc (select-keys params [:username :password :scope])
-                        :grant_type "password")
+    :form-params (-> params
+                    (select-keys [:username :password :scope])
+                    (assoc :grant_type "password"))
 
     :basic-auth [(:client-id params) (:client-secret params)]})
 
@@ -94,8 +97,9 @@
 (defmethod token-request :refresh-token
   [params]
   { :accept :json :as :json
-    :form-params (merge { :refresh_token (:refresh-token params) :grant_type "refresh_token" }
-                    (select-keys params [:scope]))
+    :form-params (-> params
+                     (select-keys [:scope])
+                     (assoc :refresh_token (:refresh-token params) :grant_type "refresh_token"))
     :basic-auth [(:client-id params) (:client-secret params)]})
 
 (defmulti fetch-token "Fetch an oauth token from server" keyword-or-class)
