@@ -1,0 +1,226 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Oauthentic by pelle</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Oauthentic</h1>
+        <p class="header">Simple OAuth 2 client library for Clojure</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/pelle/oauthentic/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/pelle/oauthentic/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/pelle/oauthentic">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/pelle">pelle</a></p>
+
+
+      </header>
+      <section>
+        <h1>oauthentic</h1>
+
+<p>Lightweight <a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-31">OAuth 2</a> client library for Clojure.</p>
+
+<p>This library only handles the authorization aspects of OAuth 2.</p>
+
+<p>We recommend using <a href="https://github.com/dakrone/clj-http">clj-http</a> for performing actual authenticated requests once you have a token.</p>
+
+<p><a href="http://travis-ci.org/pelle/oauthentic"><img src="https://secure.travis-ci.org/pelle/oauthentic.png" alt="Build Status"></a></p>
+
+<h2>Usage</h2>
+
+<p>Add the following to your project.clj's dependencies section:</p>
+
+<div class="highlight"><pre><span class="p">[</span><span class="nv">oauthentic</span> <span class="s">"1.0.0"</span><span class="p">]</span>
+</pre></div>
+
+<p>Import the library:</p>
+
+<div class="highlight"><pre><span class="p">(</span><span class="nf">use</span> <span class="ss">'oauthentic.core</span><span class="p">)</span>
+</pre></div>
+
+<h3>Obtain authorization</h3>
+
+<p>OAuth 2 will in most cases require you to send your user to an authorization url.</p>
+
+<p>In almost all cases you will want to use the <a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-31#section-4.1">Authorization Code Flow</a> to obtain authorization and a token.</p>
+
+<p>This uses a 2 step approach:</p>
+
+<ol>
+<li>Redirect user to services authorization url</li>
+<li>User is redirected back to your site with an authorization code, which you exchange for a token.</li>
+</ol><p>To obtain authorization you need the following:</p>
+
+<ul>
+<li>client id (get this from the provider)</li>
+<li>the services authorization url (get this from the provider)</li>
+<li>redirect-uri A URL for an endpoint on your site that handles the 2nd phase above</li>
+</ul><h3>FaceBook</h3>
+
+<div class="highlight"><pre><span class="nv">=&gt;</span> <span class="p">(</span><span class="nf">build-authorization-url</span> <span class="s">"https://www.facebook.com/dialog/oauth"</span> <span class="p">{</span> <span class="ss">:client-id</span> <span class="s">"INSERT YOUR OWN ID"</span> <span class="ss">:redirect-uri</span> <span class="s">"http://yoursite.com/oauth/endpoint"</span> <span class="p">})</span>
+<span class="s">"https://www.facebook.com/dialog/oauth?redirect_uri=http%253A%252F%252Fyoursite.com%252Foauth%252Fendpoint&amp;response_type=code&amp;client_id=INSERT+YOUR+OWN+ID"</span>
+</pre></div>
+
+<h3>GitHub</h3>
+
+<div class="highlight"><pre><span class="nv">=&gt;</span> <span class="p">(</span><span class="nf">build-authorization-url</span> <span class="s">"https://github.com/login/oauth/authorize"</span> <span class="p">{</span> <span class="ss">:client-id</span> <span class="s">"INSERT YOUR OWN ID"</span> <span class="ss">:redirect-uri</span> <span class="s">"http://yoursite.com/oauth/endpoint"</span> <span class="p">})</span>
+<span class="s">"https://github.com/login/oauth/authorize?redirect_uri=http%253A%252F%252Fyoursite.com%252Foauth%252Fendpoint&amp;response_type=code&amp;client_id=INSERT+YOUR+OWN+ID"</span>
+</pre></div>
+
+<p>You can also call it with the first parameter being a map containing information about the server. This map should contain the following keys:</p>
+
+<ul>
+<li>:authorization-url</li>
+<li>:client-id</li>
+</ul><p>You still pass the request specific parameters such as redirect-uri and scope in the second map.</p>
+
+<div class="highlight"><pre><span class="nv">=&gt;</span> <span class="p">(</span><span class="nf">build-authorization-url</span> <span class="p">{</span> <span class="ss">:authorization-url</span> <span class="s">"https://picomoney.com/oauth/authorize"</span>
+                              <span class="ss">:client-id</span> <span class="s">"INSERT YOUR OWN ID"</span><span class="p">}</span>
+                            <span class="p">{</span> <span class="ss">:redirect-uri</span> <span class="s">"http://yoursite.com/oauth/endpoint"</span><span class="p">})</span>
+<span class="s">"https://picomoney.com/oauth/authorize?redirect_uri=http%253A%252F%252Fyoursite.com%252Foauth%252Fendpoint&amp;response_type=code&amp;client_id=INSERT+YOUR+OWN+ID"</span>
+</pre></div>
+
+<p>You can either redirect the user to to the URL or use it as a link.</p>
+
+<p>The user will be redirected back to the URL you provided in redirect_uri with a code in the http query parameters or an error code. If you received the code proceed to...</p>
+
+<h3>Obtain Token with Authorization Code</h3>
+
+<p>To obtain a token you need the code you need the following parameters:</p>
+
+<ul>
+<li>code (from above step)</li>
+<li>redirect-uri (the same you used in the above step)</li>
+<li>client_id (get this from the provider)</li>
+<li>client_secret (get this from the provider)</li>
+<li>token url (get this from the provider)</li>
+</ul><p>In theory the following examples should work:</p>
+
+<div class="highlight"><pre><span class="c1">; Facebook</span>
+<span class="nv">=&gt;</span> <span class="p">(</span><span class="nf">fetch-token</span> <span class="s">"https://graph.facebook.com/oauth/access_token"</span> <span class="p">{</span> <span class="ss">:client-id</span> <span class="s">"INSERT YOUR OWN ID"</span> <span class="ss">:client-secret</span> <span class="s">"INSERT YOUR OWN SECRET"</span> <span class="ss">:code</span> <span class="nv">code</span> <span class="ss">:redirect-uri</span> <span class="s">"INSERT YOUR ENDPOINT HERE"</span><span class="p">})</span>
+<span class="p">{</span><span class="ss">:access-token</span> <span class="s">"TOKEN FROM SERVICE"</span> <span class="ss">:token-type</span> <span class="s">"bearer"</span><span class="p">}</span>
+
+<span class="c1">; GitHub</span>
+<span class="nv">=&gt;</span> <span class="p">(</span><span class="nf">fetch-token</span> <span class="s">"https://github.com/login/oauth/access_token"</span> <span class="p">{</span> <span class="ss">:client-id</span> <span class="s">"INSERT YOUR OWN ID"</span> <span class="ss">:client-secret</span> <span class="s">"INSERT YOUR OWN SECRET"</span> <span class="ss">:code</span> <span class="nv">code</span> <span class="ss">:redirect-uri</span> <span class="s">"INSERT YOUR ENDPOINT HERE"</span><span class="p">})</span>
+<span class="p">{</span><span class="ss">:access-token</span> <span class="s">"TOKEN FROM SERVICE"</span> <span class="ss">:token-type</span> <span class="s">"bearer"</span><span class="p">}</span>
+</pre></div>
+
+<p>You can also call it with the first parameter being a map containing information about the server. This map should contain the following keys:</p>
+
+<ul>
+<li>:token-url</li>
+<li>:client-id</li>
+<li>:client-secret</li>
+</ul><p>You still need to pass request specific details in the second map, such as :code and :redirect-uri.</p>
+
+<div class="highlight"><pre><span class="nv">=&gt;</span> <span class="p">(</span><span class="nf">fetch-token</span> <span class="p">{</span> <span class="ss">:token-url</span> <span class="s">"https://picomoney.com/oauth/token"</span>
+                  <span class="ss">:client-id</span> <span class="s">"INSERT YOUR OWN ID"</span>
+                  <span class="ss">:client-secret</span> <span class="s">"INSERT YOUR OWN SECRET"</span><span class="p">}</span>
+                <span class="p">{</span> <span class="ss">:code</span> <span class="nv">code</span> <span class="ss">:redirect-uri</span> <span class="s">"INSERT YOUR ENDPOINT HERE"</span><span class="p">})</span>
+<span class="p">{</span><span class="ss">:access-token</span> <span class="s">"TOKEN FROM SERVICE"</span> <span class="ss">:token-type</span> <span class="s">"bearer"</span><span class="p">}</span>
+</pre></div>
+
+<p>The provider may also supply you with an optional :refresh-token. See next section.</p>
+
+<h3>Obtain Token with Refresh token</h3>
+
+<p>Some providers issue refresh tokens together with a short term access token. See <a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-31#section-6">Refresh Token</a>.</p>
+
+<p>Oauthentic supports getting a fresh access token using the refresh token.</p>
+
+<p>To obtain a new token you need the code you need the following parameters:</p>
+
+<ul>
+<li>refresh-token (from above step)</li>
+<li>client_id (get this from the provider)</li>
+<li>client_secret (get this from the provider)</li>
+<li>token url (get this from the provider)</li>
+</ul><h3>Obtain Token with Client Credentials</h3>
+
+<p>To obtain a token for your own application you can skip the authorization flow completely and use this <a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-31#section-4.4">method</a>.</p>
+
+<p>You need the following parameters:</p>
+
+<ul>
+<li>:client-id (get this from the provider)</li>
+<li>:client-secret (get this from the provider)</li>
+<li>:token url (get this from the provider)</li>
+</ul><h3>Obtain Token with Resource Owner Credentials</h3>
+
+<p>To obtain a token for your own application you can skip the authorization flow completely and use this <a href="http://tools.ietf.org/html/draft-ietf-oauth-v2-31#section-4.3">method</a>.</p>
+
+<p>You need the following parameters:</p>
+
+<ul>
+<li>:client-id (get this from the provider)</li>
+<li>:client-secret (get this from the provider)</li>
+<li>:token url (get this from the provider)</li>
+<li>:username User's id</li>
+<li>:password User's password</li>
+</ul><h2>Service provider specifics</h2>
+
+<p>It is easy to customize both authorization and token requests for a specific provider. See <a href="https://github.com/pelle/oauthentic/blob/master/src/oauthentic/services/stripe.clj">src/oauthentic/services/stripe.clj</a> on how to do this.</p>
+
+<p>Using this you can present the authorization and token urls as well as customize aspects of the request, such as Stripe which uses a slightly different way of authenticating clients.</p>
+
+<div class="highlight"><pre><span class="p">(</span><span class="nf">use</span> <span class="ss">'oauthentic.services.stripe</span><span class="p">)</span>
+<span class="p">(</span><span class="nf">build-authorization-url</span> <span class="ss">:stripe</span> <span class="p">{</span> <span class="ss">:client-id</span> <span class="s">"CLIENT"</span> <span class="ss">:state</span> <span class="s">"ABCDEF"</span> <span class="ss">:scope</span> <span class="ss">:read_write</span> <span class="ss">:redirect-uri</span> <span class="s">"http://test.com/callback"</span><span class="p">})</span>
+<span class="p">(</span><span class="nf">fetch-token</span> <span class="ss">:stripe</span> <span class="p">{</span>  <span class="ss">:client-id</span> <span class="p">(</span><span class="ss">:client-id</span> <span class="s">"CLIENT"</span><span class="p">)</span>
+                        <span class="ss">:client-secret</span> <span class="s">"SECRET"</span>
+                        <span class="ss">:code</span> <span class="s">"CODE"</span>
+                        <span class="ss">:scope</span> <span class="ss">:read_write</span>
+                        <span class="ss">:redirect-uri</span> <span class="s">"http://test.com/endpoint"</span> <span class="p">})</span>
+</pre></div>
+
+<p>Please submit services and I'll be happy to accept them.</p>
+
+<h2>Ring Handler</h2>
+
+<p>There is a Ring Handler for automatically handling the above flow in a similar manner to Ruby's OmniAuth.</p>
+
+<p>It lives in oauthentic.ring and can be installed like this:</p>
+
+<div class="highlight"><pre><span class="p">(</span><span class="k">def </span><span class="nv">fb-login-handler</span> <span class="p">(</span><span class="nf">oauthentic.ring/oauthentic-handler</span> <span class="nv">login-handler</span> <span class="nv">error-handler</span> <span class="p">{</span> <span class="ss">:authorization-url</span> <span class="s">"https://github.com/login/oauth/authorize"</span>
+                                            <span class="ss">:token-url</span> <span class="s">"https://github.com/login/oauth/access_token"</span>
+                                            <span class="ss">:client-id</span> <span class="s">"INSERT YOUR OWN ID"</span>
+                                            <span class="ss">:client-secret</span> <span class="s">"INSERT YOUR OWN SECRET"</span> <span class="p">})</span>
+</pre></div>
+
+<p>Install the handler in your routes however you like.</p>
+
+<p>Login function is a ring handler function that is passed the request with the token as :oauthentic-token in the request.</p>
+
+<p>It should knows how to correctly set the session verify user based on the user database etc. As it's a ring handler it should return a correct response.</p>
+
+<p>Error handler is another ring handler that is called if an error is returned from the service.</p>
+
+<p>Default dumb implementations are available and can be used by leaving them out.</p>
+
+<h2>License</h2>
+
+<p>Copyright (C) 2012 <a href="http://stakeventures.com">Pelle Braendgaard</a> and <a href="http://picomoney.com">PicoMoney</a></p>
+
+<p>Distributed under the Eclipse Public License, the same as Clojure.</p>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
+  </body>
+</html>
