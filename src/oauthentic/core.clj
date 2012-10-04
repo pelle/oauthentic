@@ -28,13 +28,18 @@
       )))
 
 (defn create-authorization-url [authorization-url client-id response-type redirect-uri params ]
-    (let [ qp  ( merge params (reduce #( assoc %1 (name (key %2)) (val %2)) {}
-                  {"client_id" client-id "response_type" (name (or response-type "code")) "redirect_uri" redirect-uri }))
-          ]
+    (let [ scope  (if (:scope params) (name (:scope params)))
+           qp     (->>
+                    (-> params
+                      (dissoc :client-id :authorization-url :response-type :redirect-uri :scope :state)
+                      (assoc :client_id client-id :response_type (name (or response-type "code")) :redirect_uri redirect-uri :scope scope :state (:state params)))
+                    (filter #(val %1)))]
       (assoc-query-params authorization-url qp)))
 
+(defn- keyword-or-class
+  [this _] (if (keyword? this) this (class this)))
 
-(defmulti build-authorization-url "Create a OAuth authorization url for redirection or link"  (fn [this _] (class this)))
+(defmulti build-authorization-url "Create a OAuth authorization url for redirection or link"  keyword-or-class)
 
 (defmethod build-authorization-url java.util.Map [this params]
   (build-authorization-url (:authorization-url this) (merge (select-keys this [:client-id ]) params)))
@@ -93,17 +98,7 @@
                     (select-keys params [:scope]))
     :basic-auth [(:client-id params) (:client-secret params)]})
 
-;; https://stripe.com/docs/apps/oauth
-(defmethod token-request :stripe
-  [params]
-  { :accept :json :as :json
-    :form-params (assoc (select-keys (assoc params :redirect_uri (:redirect-uri params))
-                             [:code :scope :redirect_uri :client-id])
-                    :grant_type "authorization_code" )
-    :token (:client-secret params)})
-
-
-(defmulti fetch-token "Fetch an oauth token from server" (fn [this _] (class this)))
+(defmulti fetch-token "Fetch an oauth token from server" keyword-or-class)
 
 (defmethod fetch-token java.util.Map [this params]
   (fetch-token (:token-url this ) (merge (select-keys this [:client-id :client-secret]) params)))
@@ -111,8 +106,11 @@
 
 (defmethod fetch-token :default
   [url params]
-  (let [response (:body (client/post url (token-request params)))]
-    ;; TODO return everything returned
-    { :access-token (:access_token response) :token-type (keyword (:token_type response))}))
+  (let [ response (:body (client/post url (token-request params)))]
+    (-> response
+        (dissoc :access_token :token_type :refresh_token)
+        (merge
+          { :access-token (:access_token response) :token-type (keyword (:token_type response))}
+          (if-let [refresh-token (:refresh_token response)] {:refresh-token refresh-token} {})))))
 
 
