@@ -13,7 +13,7 @@ We recommend using [clj-http](https://github.com/dakrone/clj-http) for performin
 Add the following to your project.clj's dependencies section:
 
 ```clojure
-[oauthentic "1.0.0"]
+[oauthentic "1.0.1"]
 ```
 
 Import the library:
