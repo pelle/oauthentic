@@ -1,5 +1,6 @@
 (ns oauthentic.test.services.stripe
   (:use [clojure.test]
+        [oauthentic.test.helpers]
         [clj-http.fake])
   (:require
         [oauthentic.services.stripe :as stripe]
@@ -20,8 +21,8 @@
     {:accept :json, :as :json, :form-params { :grant_type "refresh_token", :scope "basic" :refresh_token "REFRESH" :client_id "CLIENT-ID"}, :oauth-token "SECRET" }
     (oauth/token-request { :service :stripe :refresh-token "REFRESH" :client-id "CLIENT-ID" :client-secret "SECRET" :scope "basic"}))))
 
-(defn stripe-request [{ :keys [headers] :as req }]
-  (if (= "Bearer SECRET" (headers "authorization"))
+(defn stripe-request [{ :keys [headers params] :as req }]
+  (if (and (= "Bearer SECRET" (headers "authorization")) (= "CLIENT" (:client_id params)))
     {:status 200 :headers {} :body (json/generate-string {  :scope  "read_write" ;(:scope params)
                                                             :livemode true
                                                             :access_token "TOKEN"
@@ -33,7 +34,7 @@
 
 (deftest fetch-oauth-tokens-for-auth-code
   (with-fake-routes
-    { "https://connect.stripe.com/oauth/token" stripe-request }
+    { "https://connect.stripe.com/oauth/token" (wrap-ring-handler-for-testing stripe-request) }
       (is (=
           { :scope "read_write"
             :livemode true
@@ -42,7 +43,7 @@
             :refresh-token "REFRESH"
             :stripe_user_id "USER_ID"
             :stripe_publishable_key "PUBLISHABLE_KEY"}
-          (oauth/fetch-token :stripe {  :client-id (:client-id "CLIENT")
+          (oauth/fetch-token :stripe {  :client-id "CLIENT"
                               :client-secret "SECRET"
                               :code "CODE"
                               :scope :read_write

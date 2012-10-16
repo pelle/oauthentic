@@ -2,8 +2,7 @@
   (:use [oauthentic.core]
         [clojure.test]
         [clj-http.fake]
-        [ring.middleware.params]
-        [ring.middleware.keyword-params])
+        [oauthentic.test.helpers])
   (:require
         [clauth.token :as t]
         [clauth.auth-code :as cd]
@@ -52,19 +51,6 @@
     {:accept :json, :as :json, :form-params { :grant_type "refresh_token", :scope "basic" :refresh_token "REFRESH"}, :basic-auth ["CLIENT-ID" "SECRET"] }
     (token-request { :refresh-token "REFRESH" :client-id "CLIENT-ID" :client-secret "SECRET" :scope "basic"})))
   )
-
-
-(defn wrap-ring-handler-for-testing
-  [handler]
-  (let [wrapped (wrap-params (wrap-keyword-params handler))]
-    (fn [req] (wrapped (assoc req
-                            :body (.getContent (:body req)))))))
-
-(defn dumprequest [req]
-  (do
-    (prn req)
-    {:status 200 :headers {} :body "{\"tx_id\":\"ABCDEF\"}"}
-    ))
 
 (deftest fetch-oauth-tokens-for-auth-code
   (t/reset-token-store!)
