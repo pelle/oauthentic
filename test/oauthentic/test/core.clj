@@ -39,18 +39,33 @@
 
 (deftest token-requests
   (is (=
-    {:accept :json, :as :json, :form-params { :grant_type "client_credentials", :scope "basic"}, :basic-auth ["CLIENT-ID" "SECRET"]}
+    {:accept :json, :as :json, :form-params { :grant_type "client_credentials", :scope "basic"}, :basic-auth ["CLIENT-ID" "SECRET"], :insecure? false}
     (token-request { :client-id "CLIENT-ID" :client-secret "SECRET" :scope "basic" })))
   (is (=
-    {:accept :json, :as :json, :form-params { :grant_type "password", :scope "basic" :username "bob" :password "my password"}, :basic-auth ["CLIENT-ID" "SECRET"]}
+    {:accept :json, :as :json, :form-params { :grant_type "password", :scope "basic" :username "bob" :password "my password"}, :basic-auth ["CLIENT-ID" "SECRET"], :insecure? false}
     (token-request { :client-id "CLIENT-ID" :client-secret "SECRET" :scope "basic" :username "bob" :password "my password" })))
   (is (=
-    {:accept :json, :as :json, :form-params { :grant_type "authorization_code", :scope "basic" :redirect_uri "http://test.com/callback" :code "CODE"}, :basic-auth ["CLIENT-ID" "SECRET"] }
+    {:accept :json, :as :json, :form-params { :grant_type "authorization_code", :scope "basic" :redirect_uri "http://test.com/callback" :code "CODE"}, :basic-auth ["CLIENT-ID" "SECRET"], :insecure? false }
     (token-request { :code "CODE" :client-id "CLIENT-ID" :client-secret "SECRET" :scope "basic" :redirect-uri "http://test.com/callback"})))
   (is (=
-    {:accept :json, :as :json, :form-params { :grant_type "refresh_token", :scope "basic" :refresh_token "REFRESH"}, :basic-auth ["CLIENT-ID" "SECRET"] }
+    {:accept :json, :as :json, :form-params { :grant_type "refresh_token", :scope "basic" :refresh_token "REFRESH"}, :basic-auth ["CLIENT-ID" "SECRET"], :insecure? false }
     (token-request { :refresh-token "REFRESH" :client-id "CLIENT-ID" :client-secret "SECRET" :scope "basic"})))
   )
+
+(deftest insecure-token-requests
+  (is (=
+    {:accept :json, :as :json, :form-params { :grant_type "client_credentials", :scope "basic"}, :basic-auth ["CLIENT-ID" "SECRET"], :insecure? true}
+    (token-request { :client-id "CLIENT-ID" :client-secret "SECRET" :scope "basic" :insecure? true})))
+  (is (=
+    {:accept :json, :as :json, :form-params { :grant_type "password", :scope "basic" :username "bob" :password "my password"}, :basic-auth ["CLIENT-ID" "SECRET"], :insecure? true}
+    (token-request { :client-id "CLIENT-ID" :client-secret "SECRET" :scope "basic" :username "bob" :password "my password" :insecure? true })))
+  (is (=
+    {:accept :json, :as :json, :form-params { :grant_type "authorization_code", :scope "basic" :redirect_uri "http://test.com/callback" :code "CODE"}, :basic-auth ["CLIENT-ID" "SECRET"], :insecure? true }
+    (token-request { :code "CODE" :client-id "CLIENT-ID" :client-secret "SECRET" :scope "basic" :redirect-uri "http://test.com/callback" :insecure? true})))
+  (is (=
+    {:accept :json, :as :json, :form-params { :grant_type "refresh_token", :scope "basic" :refresh_token "REFRESH"}, :basic-auth ["CLIENT-ID" "SECRET"], :insecure? true }
+    (token-request { :refresh-token "REFRESH" :client-id "CLIENT-ID" :client-secret "SECRET" :scope "basic" :insecure? true})))
+)
 
 (deftest fetch-oauth-tokens-for-auth-code
   (t/reset-token-store!)

@@ -15,10 +15,10 @@
 
 (deftest token-requests
   (is (=
-    {:accept :json, :as :json, :form-params { :grant_type "authorization_code", :scope "basic" :redirect_uri "http://test.com/callback" :code "CODE" :client_id "CLIENT-ID"}, :oauth-token "SECRET" }
+    {:accept :json, :as :json, :form-params { :grant_type "authorization_code", :scope "basic" :redirect_uri "http://test.com/callback" :code "CODE" :client_id "CLIENT-ID"}, :oauth-token "SECRET", :insecure? false }
     (oauth/token-request { :service :stripe :code "CODE" :client-id "CLIENT-ID" :client-secret "SECRET" :scope "basic" :redirect-uri "http://test.com/callback"})))
   (is (=
-    {:accept :json, :as :json, :form-params { :grant_type "refresh_token", :scope "basic" :refresh_token "REFRESH" :client_id "CLIENT-ID"}, :oauth-token "SECRET" }
+    {:accept :json, :as :json, :form-params { :grant_type "refresh_token", :scope "basic" :refresh_token "REFRESH" :client_id "CLIENT-ID"}, :oauth-token "SECRET", :insecure? false }
     (oauth/token-request { :service :stripe :refresh-token "REFRESH" :client-id "CLIENT-ID" :client-secret "SECRET" :scope "basic"}))))
 
 (defn stripe-request [{ :keys [headers params] :as req }]
