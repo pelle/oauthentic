@@ -70,18 +70,18 @@
 
 (defmulti token-request "Create a token request map" grant-type)
 
-;; http://tools.ietf.org/html/draft-ietf-oauth-v2-31#section-4.1.3
+;; http://tools.ietf.org/html/rfc6749#section-4.1.3
 (defmethod token-request :authorization-code
   [params]
   { :accept :json :as :json
     :form-params (-> params
                     (assoc :redirect_uri (:redirect-uri params))
-                    (select-keys [:code :scope :redirect_uri])
+                    (select-keys [:code :scope :client-id :redirect_uri])
                     (assoc :grant_type "authorization_code"))
     :basic-auth [(:client-id params) (:client-secret params)]
     :insecure? (allow-insecure? params)})
 
-;; http://tools.ietf.org/html/draft-ietf-oauth-v2-31#section-4.4
+;; http://tools.ietf.org/html/rfc6749#section-4.4
 (defmethod token-request :client-credentials
   [params]
   { :accept :json :as :json
@@ -91,7 +91,7 @@
     :basic-auth [(:client-id params) (:client-secret params)]
     :insecure? (allow-insecure? params)})
 
-;; http://tools.ietf.org/html/draft-ietf-oauth-v2-31#section-4.3
+;; http://tools.ietf.org/html/rfc6749#section-4.3
 (defmethod token-request :password
   [params]
   { :accept :json :as :json
@@ -102,7 +102,7 @@
     :basic-auth [(:client-id params) (:client-secret params)]
     :insecure? (allow-insecure? params)})
 
-;; http://tools.ietf.org/html/draft-ietf-oauth-v2-31#section-6
+;; http://tools.ietf.org/html/rfc6749#section-6
 (defmethod token-request :refresh-token
   [params]
   { :accept :json :as :json
