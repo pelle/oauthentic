@@ -45,7 +45,7 @@
     {:accept :json, :as :json, :form-params { :grant_type "password", :scope "basic" :username "bob" :password "my password"}, :basic-auth ["CLIENT-ID" "SECRET"], :insecure? false}
     (token-request { :client-id "CLIENT-ID" :client-secret "SECRET" :scope "basic" :username "bob" :password "my password" })))
   (is (=
-    {:accept :json, :as :json, :form-params { :grant_type "authorization_code", :scope "basic" :client-id "CLIENT-ID" :redirect_uri "http://test.com/callback" :code "CODE"}, :basic-auth ["CLIENT-ID" "SECRET"], :insecure? false }
+    {:accept :json, :as :json, :form-params { :grant_type "authorization_code", :scope "basic" :client_id "CLIENT-ID" :redirect_uri "http://test.com/callback" :code "CODE"}, :basic-auth ["CLIENT-ID" "SECRET"], :insecure? false }
     (token-request { :code "CODE" :client-id "CLIENT-ID" :client-secret "SECRET" :scope "basic" :redirect-uri "http://test.com/callback"})))
   (is (=
     {:accept :json, :as :json, :form-params { :grant_type "refresh_token", :scope "basic" :refresh_token "REFRESH"}, :basic-auth ["CLIENT-ID" "SECRET"], :insecure? false }
@@ -60,7 +60,7 @@
     {:accept :json, :as :json, :form-params { :grant_type "password", :scope "basic" :username "bob" :password "my password"}, :basic-auth ["CLIENT-ID" "SECRET"], :insecure? true}
     (token-request { :client-id "CLIENT-ID" :client-secret "SECRET" :scope "basic" :username "bob" :password "my password" :insecure? true })))
   (is (=
-    {:accept :json, :as :json, :form-params { :grant_type "authorization_code", :scope "basic" :client-id "CLIENT-ID" :redirect_uri "http://test.com/callback" :code "CODE"}, :basic-auth ["CLIENT-ID" "SECRET"], :insecure? true }
+    {:accept :json, :as :json, :form-params { :grant_type "authorization_code", :scope "basic" :client_id "CLIENT-ID" :redirect_uri "http://test.com/callback" :code "CODE"}, :basic-auth ["CLIENT-ID" "SECRET"], :insecure? true }
     (token-request { :code "CODE" :client-id "CLIENT-ID" :client-secret "SECRET" :scope "basic" :redirect-uri "http://test.com/callback" :insecure? true})))
   (is (=
     {:accept :json, :as :json, :form-params { :grant_type "refresh_token", :scope "basic" :refresh_token "REFRESH"}, :basic-auth ["CLIENT-ID" "SECRET"], :insecure? true }

@@ -76,7 +76,8 @@
   { :accept :json :as :json
     :form-params (-> params
                     (assoc :redirect_uri (:redirect-uri params))
-                    (select-keys [:code :scope :client-id :redirect_uri])
+                    (assoc :client_id (:client-id params))
+                    (select-keys [:code :scope :client_id :redirect_uri])
                     (assoc :grant_type "authorization_code"))
     :basic-auth [(:client-id params) (:client-secret params)]
     :insecure? (allow-insecure? params)})
