@@ -62,28 +62,38 @@
     (:username params) :password
     :else :client-credentials))
 
+(defn allow-insecure?
+  "Allow use of insecure SSL, such as self-signed certs"
+  [params]
+  (if (nil? (:insecure? params)) false (:insecure? params))
+  )
+
 (defmulti token-request "Create a token request map" grant-type)
 
-;; http://tools.ietf.org/html/draft-ietf-oauth-v2-31#section-4.1.3
+;; http://tools.ietf.org/html/rfc6749#section-4.1.3
 (defmethod token-request :authorization-code
   [params]
   { :accept :json :as :json
     :form-params (-> params
                     (assoc :redirect_uri (:redirect-uri params))
-                    (select-keys [:code :scope :redirect_uri])
+                    (assoc :client_id (:client-id params))
+                    (assoc :client_secret (:client-secret params))
+                    (select-keys [:code :scope :client_id :client_secret :redirect_uri])
                     (assoc :grant_type "authorization_code"))
-    :basic-auth [(:client-id params) (:client-secret params)]})
+    :basic-auth [(:client-id params) (:client-secret params)]
+    :insecure? (allow-insecure? params)})
 
-;; http://tools.ietf.org/html/draft-ietf-oauth-v2-31#section-4.4
+;; http://tools.ietf.org/html/rfc6749#section-4.4
 (defmethod token-request :client-credentials
   [params]
   { :accept :json :as :json
     :form-params (-> params
                     (select-keys [:scope])
                     (assoc :grant_type "client_credentials"))
-    :basic-auth [(:client-id params) (:client-secret params)]})
+    :basic-auth [(:client-id params) (:client-secret params)]
+    :insecure? (allow-insecure? params)})
 
-;; http://tools.ietf.org/html/draft-ietf-oauth-v2-31#section-4.3
+;; http://tools.ietf.org/html/rfc6749#section-4.3
 (defmethod token-request :password
   [params]
   { :accept :json :as :json
@@ -91,16 +101,18 @@
                     (select-keys [:username :password :scope])
                     (assoc :grant_type "password"))
 
-    :basic-auth [(:client-id params) (:client-secret params)]})
+    :basic-auth [(:client-id params) (:client-secret params)]
+    :insecure? (allow-insecure? params)})
 
-;; http://tools.ietf.org/html/draft-ietf-oauth-v2-31#section-6
+;; http://tools.ietf.org/html/rfc6749#section-6
 (defmethod token-request :refresh-token
   [params]
   { :accept :json :as :json
     :form-params (-> params
                      (select-keys [:scope])
                      (assoc :refresh_token (:refresh-token params) :grant_type "refresh_token"))
-    :basic-auth [(:client-id params) (:client-secret params)]})
+    :basic-auth [(:client-id params) (:client-secret params)]
+    :insecure? (allow-insecure? params)})
 
 (defmulti fetch-token "Fetch an oauth token from server" keyword-or-class)
 
